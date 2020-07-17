@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>watch与computed的区别</title>
+  <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+  <script src="https://unpkg.com/vue-router/dist/vue-router.js"></script>
+</head>
+<body>
+  <div id="vue">
+    <input type="text" v-model="fistName">
+    <input type="text" v-model="lastName">
+    <input type="text" v-model="fullName">
+  </div>
+  <div class="router">
+    <router-link to="/foo">Go to Foo</router-link>
+    <router-link to="/bar">Go to Bar</router-link>
+    <!-- <a href="prototype.html">aaaaa</a>
+    <a href="functions.html">bbbbb</a> -->
+  </div>
+  <router-view>
+
+  </router-view>
+</body>
+<script>
+  var app = new Vue({
+    el: '#vue',
+    router = new VueRouter({
+      routes // (缩写) 相当于 routes: routes
+    }),
+    data:{
+      fistName: 'foot',
+      lastName: 'bar',
+      Foo: { template: '<div>foo</div>' },
+      Bar: { template: '<div>bar</div>' },
+      routes = [
+        { path: '/foo', component: Foo },
+        { path: '/bar', component: Bar }
+      ],
+    },
+    computed: {
+      fullName: {
+        get() {
+          return this.fistName+' '+this.lastName
+        },
+        set(val) {
+          console.log(val)
+          const name = val.split(' ')
+          console.log(name)
+          this.fistName = name[0]
+          this.lastName = name[1]
+        }
+      }
+    },
+    wathch: {
+      "$route.path": function(newVal,oldVal) {
+        console.log(newVal,oldVal)
+      }
+    },
+    methods: {
+
+    },
+    
+  })
+</script>
+</html>

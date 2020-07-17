@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>原型</title>
+</head>
+<body>
+  
+</body>
+<script>
+  // 数组方法
+  // concat: 连接2个或多个数组，并返回结果
+  var aa = [1,2]
+  var bb = [1,2,3]
+  var cc = aa.concat(bb)
+  // console.log(cc) //[1,2,1,2,3]
+  /**
+    every: 对数组中的每一项运行给定函数，如果该函数对每一项都返回true，则返回true
+    some: 对数组中的每一项运行给定函数，如果任一项都返回true，则返回true
+
+    some一直在找符合条件的值，一旦找到，则不会继续迭代下去。
+    every从迭代开始，一旦有一个不符合条件，则不会继续迭代下去
+  **/
+  var aa = [ 1, 2, 3, 4, 5, 6 ]
+  var bb = aa.every(item => {
+    console.log(item)
+    return item > 0
+  })
+  function funC (x){
+    console.log(x)
+    return x>3
+  }
+  // console.log(bb)
+  var cc = aa.some(funC)
+  // console.log(cc)
+  // 排序
+  var friends = [
+    {name: 'john', age: 30},
+    {name: 'Ana', age: 20},
+    {name: 'Chris', age: 25},
+  ]
+  // 自定义排序方法
+  function comparePerson (a,b){
+    console.log(a,b)
+    if (a.age < b.age){
+      return -1 //升序
+    }
+    if (a.age > b.age){
+      return 1 // 降序
+    }
+    return 0
+  } 
+  friends.sort(comparePerson)
+  console.log(friends)
+</script>
+</html>

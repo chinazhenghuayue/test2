@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>方法或函数</title>
+</head>
+<style>
+  .box {
+    width: 100px;
+    height: 100px;
+    background: red;
+    border: 4px solid;
+  }
+</style>
+<body>
+  <!-- 一个盒子不管是标准和模型还ie和模型，它的背景色（backrgound-color）都只能覆盖到内边距（padding） -->
+  <div class="box"></div>
+  <input type="number" onkeyup="this.value=this.value.replace(/\D/g,'')">
+  <p id="help">Helpful notes will appear here</p>
+  <p>E-mail: <input type="text" id="email" name="email"></p>
+  <p>Name: <input type="text" id="name" name="name"></p>
+  <p>Age: <input type="text" id="age" name="age"></p>
+</body>
+<script>
+  function showHelp(help) {
+    document.getElementById('help').innerHTML = help;
+  }
+
+  function setupHelp() {
+    var helpText = [
+        {'id': 'email', 'help': 'Your e-mail address'},
+        {'id': 'name', 'help': 'Your full name'},
+        {'id': 'age', 'help': 'Your age (you must be over 16)'}
+      ];
+
+    for (var i = 0; i < helpText.length; i++) {
+      let item = helpText[i];
+      document.getElementById(item.id).onfocus = function() {
+        showHelp(item.help);
+      }
+    }
+  }
+
+setupHelp();
+  // 字符串去除多余空格并反转
+  var aa = "  a good   example "
+  var reverseWords = function(s) {
+    let left = 0
+    let right = s.length - 1
+    let queue = []
+    let word = ''
+    while (s.charAt(left) === ' ') left ++
+    while (s.charAt(right) === ' ') right --
+    while (left <= right) {
+        let char = s.charAt(left)
+        if (char === ' ' && word) {
+            queue.unshift(word)
+            word = ''
+        } else if (char !== ' '){
+            word += char
+        }
+        left++
+    }
+    queue.unshift(word)
+    return queue.join(' ')
+  };
+  // console.log(reverseWords(aa))
+// 模拟发布订阅模式
+  let eventEmitter = {
+    // 缓存列表（调度中心）
+    list: {},
+    // 订阅方法（订阅者）
+    on: function (event, callBack){
+      // 如果对象(list)中没有对应的 event 值，也就是说明没有订阅过，就给 event 创建个缓存列表
+      // 如有对象(list)中有相应的 event 值，把方法（callback) 添加到对应 event 的缓存列表里
+      (this.list[event] || (this.list[event] = [])).push(callBack)
+      return this
+    },
+    // 执行方法（发布者）
+    emit() {
+      // 第一个参数是对应的 event 值，直接用数组的 shift 方法取出
+      let event = [].shift.call(arguments)
+
+      let fns = [...this.list[event]]
+      if (!fns || fns.length === 0) {
+        return false
+      }
+      // 遍历 event 值对应的缓存列表，依次执行 fn
+      fns.forEach(fn => {
+        fn.apply(this, arguments)
+      })
+      return this
+    }
+  }
+  function user1 (a) {
+    console.log('user1',a)
+  }
+  function user2 (b) {
+    console.log('user2', b)
+  } 
+  function user3 (c) {
+    console.log("user3", c)
+  }
+  eventEmitter.on('aa',user1)
+  eventEmitter.on('aa', user2)
+  eventEmitter.on('bb', user3)
+  // eventEmitter.emit('aa','发布javaScript')
+  // eventEmitter.emit('bb','发布vue')
+  // console.log(eventEmitter,eventEmitter.arguments)
+// 手写发布订阅模式 EventEmitter
+  class EventEmitter {
+    constructor() {
+      this.events = {};
+    }
+    // 实现订阅
+    on(type, callBack) {
+      if (!this.events) this.events = Object.create(null);
+
+      if (!this.events[type]) {
+        this.events[type] = [callBack];
+      } else {
+        this.events[type].push(callBack);
+      }
+    }
+    // 删除订阅
+    off(type, callBack) {
+      if (!this.events[type]) return;
+      this.events[type] = this.events[type].filter(item => {
+        return item !== callBack;
+      });
+    }
+    // 只执行一次订阅事件
+    once(type, callBack) {
+      function fn() {
+        callBack();
+        this.off(type, fn);
+      }
+      this.on(type, fn);
+    }
+    // 触发事件
+    emit(type, ...rest) {
+      this.events[type] &&
+        this.events[type].forEach(fn => fn.apply(this, rest));
+    }
+  }
+// 使用如下
+  const event = new EventEmitter();
+
+  const handle = (...rest) => {
+    // console.log(rest);
+  };
+
+  event.on("click", handle);
+
+  event.emit("click", 1, 2, 3, 4);
+
+  event.off("click", handle);
+
+  event.emit("click", 1, 2);
+
+  event.once("dbClick", () => {
+    // console.log(123456);
+  });
+  event.emit("dbClick");
+  event.emit("dbClick");
+
+  //定义一家猎人工会
+	//主要功能包括任务发布大厅(topics)，以及订阅任务(subscribe)，发布任务(publish)
+	let HunterUnion = {
+		type: 'hunt',
+		topics: Object.create(null),
+		subscribe: function (topic, fn){
+		    if(!this.topics[topic]){
+		      	this.topics[topic] = [];  
+		    }
+		    this.topics[topic].push(fn);
+		},
+		publish: function (topic, money){
+		    if(!this.topics[topic])
+		      	return;
+		    for(let fn of this.topics[topic]){
+		    	fn(money)
+		    }
+		}
+	}
+	
+	//定义一个猎人类
+	//包括姓名，级别
+	function Hunter(name, level){
+		this.name = name
+		this.level = level
+	}
+	//猎人可在猎人工会发布订阅任务
+	Hunter.prototype.subscribe = function (topic, fn){
+		console.log(this.level + '猎人' + this.name + '订阅了狩猎' + topic + '的任务')
+	    HunterUnion.subscribe(topic, fn)
+	}
+	Hunter.prototype.publish = function (topic, money){
+		console.log(this.level + '猎人' + this.name + '发布了狩猎' + topic + '的任务')
+	    HunterUnion.publish(topic, money)
+	}
+	
+	//猎人工会走来了几个猎人
+	let hunterMing = new Hunter('小明', '黄金')
+	let hunterJin = new Hunter('小金', '白银')
+	let hunterZhang = new Hunter('小张', '黄金')
+	let hunterPeter = new Hunter('Peter', '青铜')
+	
+	//小明，小金，小张分别订阅了狩猎tiger的任务
+	hunterMing.subscribe('tiger', function(money){
+		console.log('小明表示：' + (money > 200 ? '' : '不') + '接取任务')
+	})
+	hunterJin.subscribe('tiger', function(money){
+		console.log('小金表示：接取任务')
+	})
+	hunterZhang.subscribe('tiger', function(money){
+		console.log('小张表示：接取任务')
+	})
+	//Peter订阅了狩猎sheep的任务
+	hunterPeter.subscribe('sheep', function(money){
+		console.log('Peter表示：接取任务')
+	})
+	
+	//Peter发布了狩猎tiger的任务
+	hunterPeter.publish('tiger', 198)
+	
+	//猎人们发布(发布者)或订阅(观察者/订阅者)任务都是通过猎人工会(调度中心)关联起来的，他们没有直接的交流。
+
+  function love1(){
+    // debugger
+     var num = 223;
+     var me1 = function() {
+           console.log(num);
+     }
+     num++;
+     return me1;
+}
+love1()()
+// var loveme1 = love1();
+// loveme1();
+var Counter = (function() {
+  var privateCounter = 0;
+  function changeBy(val) {
+    privateCounter += val;
+  }
+  return {
+    increment: function() {
+      changeBy(1);
+    },
+    decrement: function() {
+      changeBy(-1);
+    },
+    value: function() {
+      return privateCounter;
+    }
+  }   
+})();
+console.log(Counter.value())
+Counter.increment()
+Counter.increment()
+console.log(Counter.value())
+</script>
+</html>
